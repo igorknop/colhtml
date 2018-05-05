@@ -26,7 +26,8 @@
     }
     function setup() {
       raf = requestAnimationFrame(passo)
-      sprites.push(new Sprite())
+      sprites.push(new Sprite(100,100,20,20))
+      sprites.push(new Sprite(150,150,5,5,'red'))
     }
 
     function passo(t) {
@@ -41,16 +42,16 @@
       requestAnimationFrame(passo)
     }
 
-    function Sprite() {
-      this.x = 0;
-      this.y = 0;
-      this.w = 5;
-      this.h = 5;
+    function Sprite(x=0,y=0,w=5,h=5,c='blue') {
+      this.x = x;
+      this.y = y;
+      this.w = w;
+      this.h = h;
       this.vx = 0;
       this.vy = 0;
       this.ax = 0;
       this.ay = 0;
-      this.color = "blue"
+      this.color = c
       this.status = D.STOPPED
     }
 
