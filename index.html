@@ -1,58 +1,105 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
-    <canvas id="canvas" width="300" height="300"></canvas>
-    <script>
-      var canvas = document.getElementsByTagName("canvas")[0]
-      var ctx = canvas.getContext("2d")
 
-      var dt = prev = 0
-      var raf
-      var dists = []
-      var sprites = []
-      setup()
-      function setup(){
-        raf = requestAnimationFrame(passo)
-        sprites.push(new Sprite())
-      }
+<head>
+  <meta charset="utf-8">
+  <title></title>
+</head>
 
-      function passo(t){
-        dt = (t - prev)/1000;
-        ctx.fillStyle = "black";
-        ctx.fillRect(0,0, canvas.width, canvas.height)
-        for (var i = 0; i < sprites.length; i++) {
-          sprites[i].move(dt)
-          sprites[i].draw(ctx)
-        }
-        prev = t;
-      }
+<body>
+  <canvas id="canvas" width="300" height="300"></canvas>
+  <script>
+    var canvas = document.getElementsByTagName("canvas")[0]
+    var ctx = canvas.getContext("2d")
 
-      function Sprite(){
-        this.x = 0;
-        this.y = 0;
-        this.w = 5;
-        this.h = 5;
-        this.vx = 0;
-        this.vy = 0;
-        this.ax = 0;
-        this.ay = 0;
-        this.color = "blue"
+    var dt = prev = 0
+    var raf
+    var dists = []
+    var sprites = []
+    const D = {
+      ACCBAS : 20,
+      W_UP : 'u',
+      W_DOWN : 'd',
+      W_RIGHT : 'r',
+      W_LEFT : 'l',
+      STOPPED : 's',
+    }
+    function setup() {
+      raf = requestAnimationFrame(passo)
+      sprites.push(new Sprite())
+    }
+
+    function passo(t) {
+      dt = (t - prev) / 1000;
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      for (var i = 0; i < sprites.length; i++) {
+        sprites[i].move(dt)
+        sprites[i].draw(ctx)
       }
-      Sprite.prototype.move = function (dt) {
-        this.vx += this.ax*dt
-        this.x += this.vx*dt
+      prev = t;
+      requestAnimationFrame(passo)
+    }
+
+    function Sprite() {
+      this.x = 0;
+      this.y = 0;
+      this.w = 5;
+      this.h = 5;
+      this.vx = 0;
+      this.vy = 0;
+      this.ax = 0;
+      this.ay = 0;
+      this.color = "blue"
+      this.status = D.STOPPED
+    }
+
+
+    Sprite.prototype.setStatus = function(status) {
+      switch (status) {
+        case D.W_RIGHT:
+          this.ax = D.ACCBAS;
+          this.ay = 0;
+          this.status = D.W_RIGHT
+          break;
+        case D.W_LEFT:
+          this.ax = -D.ACCBAS;
+          this.ay = 0;
+          this.status = D.W_LEFT
+          break;
+        case D.W_DOWN:
+          this.ax = 0;
+          this.ay = D.ACCBAS;
+          this.status = D.W_DOWN
+          break;
+        case D.W_UP:
+          this.ax = 0;
+          this.ay = -D.ACCBAS;
+          this.status = D.W_UP
+          break;
+        case D.STOPPED:
+          this.status = D.STOPPED
+        default:
+          this.status = D.STOPPED
+          this.vx = 0;
+          this.vy = 0;
       }
-      Sprite.prototype.draw = function(ctx){
-        ctx.save()
-        ctx.translate(this.x, this.y)
-        ctx.fillStyle = this.color
-        ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h)
-        ctx.restore()
-      }
-    </script>
-  </body>
+    }
+    Sprite.prototype.move = function(dt) {
+      this.vx += this.ax * dt
+      this.x += this.vx * dt
+    }
+    Sprite.prototype.draw = function(ctx) {
+      ctx.save()
+      ctx.translate(this.x, this.y)
+      ctx.fillStyle = this.color
+      ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h)
+      ctx.restore()
+    }
+
+    setup()
+
+  </script>
+</body>
+
 </html>
