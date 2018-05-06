@@ -25,8 +25,12 @@
       MAX_SPRITES: 100,
       MAX_MONSTERS: 5,
       MAX_BUILDINGS: 15,
+      MIN_MONSTER_SIZE: 5,
       ACCBAS: 50,
       P_CD: 1,
+      P_BD: -1,
+      P_WD: 1,
+      P_GD: 5,
       B_CD: 1,
       M_CD: 3,
       M_S: 3,
@@ -67,17 +71,29 @@
       }
 
       for (var j = monsters.length - 1; j >= 0; j--) {
+        if(monsters[j].w<D.MIN_MONSTER_SIZE){
+          monsters.splice(j,1)
+          continue
+        }
         for (var i = people.length - 1; i >= 0; i--) {
           if (people[i].isHit(monsters[j])) {
+            if (people[i].color === 'green') {
+              monsters[j].w -= D.P_WD
+              monsters[j].h -= D.P_WD
+            } else if (people[i].color === 'blue') {
+              monsters[j].w -= D.P_GD
+              monsters[j].h -= D.P_GD
+            } else {
+              monsters[j].w -= D.P_BD
+              monsters[j].h -= D.P_BD
+              monsters[j].kills++
+            }
             people.splice(i, 1)
-            monsters[j].kills++
-              monsters[j].w++
-              monsters[j].h++
           }
         }
         for (var i = buildings.length - 1; i >= 0; i--) {
           if (buildings[i].isHit(monsters[j]) &&
-            monsters[j].w > 2 * buildings[i].w) {
+            monsters[j].w >= 2 * buildings[i].w) {
             //monsters[j].w -= buildings[i].w
             //monsters[j].h -= buildings[i].w
             buildings.splice(i, 1)
