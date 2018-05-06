@@ -181,20 +181,20 @@
       this.vy += this.ay * dt
       this.y += this.vy * dt
 
-      if (this.x - this.w / 2 < 0) {
-        this.x = this.w / 2
+      if (this.x - this.w / 2 < 10) {
+        this.x = this.w / 2+10
         this.setStatus(D.W_RIGHT)
       }
-      if (this.x + this.w / 2 > canvas.width) {
-        this.x = canvas.width - this.w / 2
+      if (this.x + this.w / 2 > canvas.width-10) {
+        this.x = canvas.width - this.w / 2 -10
         this.setStatus(D.W_LEFT)
       }
-      if (this.y - this.h / 2 < 0) {
-        this.y = this.h / 2
+      if (this.y - this.h / 2 < 40) {
+        this.y = this.h / 2 + 40
         this.setStatus(D.W_DOWN)
       }
-      if (this.y + this.h / 2 > canvas.height) {
-        this.y = canvas.height - this.h / 2
+      if (this.y + this.h / 2 > canvas.height-10) {
+        this.y = canvas.height - this.h / 2-10
         this.setStatus(D.W_UP)
       }
     }
