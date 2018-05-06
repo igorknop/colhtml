@@ -19,7 +19,8 @@
     var buildings = []
     var monsters = []
     var people = []
-    var food = 100
+    var food = 50
+    var foodcd = 0
     const D = {
       A_FARMERS: 'af',
       A_BUILDERS: 'ab',
@@ -63,6 +64,13 @@
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
       for (var i = people.length - 1; i >= 0; i--) {
+        if (food <= 0 && foodcd <= 0) {
+          people.splice(i, 1)
+          foodcd = 0.5
+          continue;
+        } else {
+          foodcd -= dt
+        }
         people[i].behave(dt)
         people[i].move(dt)
         people[i].draw(ctx)
@@ -482,7 +490,7 @@
         this.cd -= dt
       } else {
         this.cd = D.PEOPLE_FARM_SPAWN_CD
-        food += 5*dt
+        food += 5 * dt
       }
     }
 
