@@ -1,12 +1,12 @@
 import {D} from "./Config.js"
 import {Sprite} from "./Sprite.js"
-import {BuildersHall} from "./BuildersHall.js"
+import {Farm} from "./Farm.js"
 
 class Farmer extends Sprite {
   constructor(world, x, y) {
-    super(world, x, y, 5,5,'yellow')
+    super(world, x, y, 5, 5, 'yellow')
   }
-  behave(dt){
+  behave(dt) {
     if (this.cd > 0) {
       this.cd -= dt
     } else {
@@ -27,7 +27,8 @@ class Farmer extends Sprite {
           break;
         case 4:
           this.setStatus(D.STOPPED)
-          this.cd = 2 * D.B_CD/*
+          this.cd = 2 * D.B_CD
+          if(this.world.buildings.length>=D.MAX_BUILDINGS) return
           var spawner = new Farm(this.world, this.x, this.y)
           if (spawner) {
             this.world.buildings.push(spawner)
@@ -36,11 +37,13 @@ class Farmer extends Sprite {
                 this.world.buildings.pop()
               }
             }
-          }*/
+          }
           break
       }
     }
   }
 }
 
-export {Farmer}
+export {
+  Farmer
+}

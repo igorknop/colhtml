@@ -28,6 +28,7 @@ class Builder extends Sprite {
         case 4:
           this.setStatus(D.STOPPED)
           this.cd = 2 * D.B_CD
+          if(this.world.buildings.length>=D.MAX_BUILDINGS) return
           var spawner = new BuildersHall(this.world,this.x, this.y)
           if (spawner) {
             this.world.buildings.push(spawner)
