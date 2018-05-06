@@ -163,7 +163,7 @@ class World {
         }
       }
       for (var i = this.buildings.length - 1; i >= 0; i--) {
-        if (this.buildings[i].isHit(this.monsters[j]) && this.monsters[j].w >= 2 * this.buildings[i].w) {
+        if (this.buildings[i].isHit(this.monsters[j]) && this.monsters[j].w >= 1.5 * this.buildings[i].w) {
           //this.monsters[j].w -= this.buildings[i].w
           //this.monsters[j].h -= this.buildings[i].w
           this.buildings.splice(i, 1)
