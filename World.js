@@ -40,6 +40,12 @@ class World {
   }
 
   step(dt, ctx) {
+    for (var i = 0; i < 300; i += 32) {
+      for (var j = 0; j < 300; j += 32) {
+        //ctx.drawImage(this.image2, 368,192,32,32,i,j,32,32)
+        ctx.drawImage(this.image2, 368,241,32,32,i,j,32,32)
+      }
+    }
     for (var i = this.people.length - 1; i >= 0; i--) {
       if (this.food <= 0 && this.foodcd <= 0) {
         this.people.splice(i, 1)

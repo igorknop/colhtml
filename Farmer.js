@@ -29,7 +29,7 @@ class Farmer extends Sprite {
           this.setStatus(D.STOPPED)
           this.cd = 2 * D.B_CD
           if(this.world.buildings.length>=D.MAX_BUILDINGS) return
-          var spawner = new Farm(this.world, this.x, this.y)
+          var spawner = new Farm(this.world, Math.floor(this.x/32)*32, Math.floor(this.y/32)*32)
           if (spawner) {
             this.world.buildings.push(spawner)
             for (var i = this.world.buildings.length - 2; i >= 0; i--) {
