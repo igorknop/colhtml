@@ -4,7 +4,7 @@ import {BuildersHall} from "./BuildersHall.js"
 
 class Builder extends Sprite {
   constructor(world, x, y) {
-    super(world, x, y, 5,5,'red')
+    super(world, x, y, 15,15,'red')
   }
   behave(dt){
     if (this.cd > 0) {
@@ -41,6 +41,14 @@ class Builder extends Sprite {
           break
       }
     }
+  }
+  draw(ctx){
+    ctx.save()
+    ctx.translate(this.x, this.y)
+    //ctx.fillStyle = this.color
+    //ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h)
+    ctx.drawImage(this.world.image, 162, 240, 15, 17,-this.w / 2, -this.h / 2, this.w, this.h+2)
+    ctx.restore()
   }
 }
 

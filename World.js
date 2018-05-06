@@ -17,6 +17,8 @@ class World {
     this.foodcd = 0
     this.creating = D.A_BUILDERS
     this.setup()
+    this.image = new Image()
+    this.image.src = "0x72_16x16DungeonTileset.v4.png"
   }
 
   setup() {
