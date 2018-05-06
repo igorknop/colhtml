@@ -22,7 +22,11 @@
       MAX_SPRITES: 100,
       MAX_MONSTERS: 5,
       MAX_BUILDINGS: 15,
-      ACCBAS: 20,
+      ACCBAS: 50,
+      P_CD: 1,
+      B_CD: 1,
+      M_CD: 3,
+      M_S: 3,
       W_UP: 'u',
       W_DOWN: 'd',
       W_RIGHT: 'r',
@@ -55,6 +59,16 @@
         monsters[i].behave(dt)
         monsters[i].move(dt)
         monsters[i].draw(ctx)
+      }
+
+      for (var i = people.length-1; i>=0; i--) {
+        for (var j = monsters.length-1; j>=0; j--) {
+          if(people[i].isHit(monsters[j])){
+            people.splice(i,1)
+            monsters[j].kills++
+            break
+          }
+        }
       }
       ctx.fillStyle = 'red'
       ctx.fillText('People: ' + people.length, 20, 10);
@@ -117,10 +131,22 @@
       this.vy += this.ay * dt
       this.y += this.vy * dt
 
-      if (this.x < 0) this.x = 0
-      if (this.x > canvas.width) this.x = canvas.width
-      if (this.y < 0) this.y = 0
-      if (this.y > canvas.height) this.y = canvas.height
+      if (this.x < 0) {
+        this.x = 0
+        this.setStatus(D.W_RIGHT)
+      }
+      if (this.x > canvas.width) {
+        this.x = canvas.width
+        this.setStatus(D.W_LEFT)
+      }
+      if (this.y < 0) {
+        this.y = 0
+        this.setStatus(D.W_DOWN)
+      }
+      if (this.y > canvas.height) {
+        this.y = canvas.height
+        this.setStatus(D.W_UP)
+      }
     }
     Sprite.prototype.draw = function(ctx) {
       ctx.save()
@@ -142,7 +168,7 @@
       if (this.cd > 0) {
         this.cd -= dt
       } else {
-        this.cd = 2.0
+        this.cd = D.P_CD
         var dirm = Math.floor(Math.random() * 5)
         switch (dirm) {
           case 0:
@@ -159,7 +185,7 @@
             break;
           case 4:
             this.setStatus(D.STOPPED)
-            this.cd = 3
+            this.cd = D.P_CD
             var spawner = spawnWalkerSpawner(this.x, this.y)
             if (spawner) buildings.push(spawner)
             break
@@ -168,10 +194,15 @@
     }
 
     function Hunter(dt) {
+      if(this.kills >= D.M_S){
+        this.kills = 0
+        var hunter = spawnHunter(this.x, this.y)
+        if(hunter) monsters.push(hunter)
+      }
       if (this.cd > 0) {
         this.cd -= dt
       } else {
-        this.cd = 1.0
+        this.cd = D.M_CD
         var dirm = Math.floor(Math.random() * 5)
         switch (dirm) {
           case 0:
@@ -194,7 +225,7 @@
       if (people.length >= D.MAX_SPRITES) return;
       var walker = new Sprite(x, y, 5, 5, 'red')
       walker.behave = RandomWanderer
-      walker.cd = 1
+      walker.cd = D.P_CD
       return walker
     }
 
@@ -202,7 +233,7 @@
       if (buildings.length >= D.MAX_BUILDINGS) return;
       var walker = new Sprite(x, y, 10, 10, 'blue')
       walker.behave = RandomWandererSpawner
-      walker.cd = 5
+      walker.cd = D.B_CD
       return walker
     }
 
@@ -211,6 +242,7 @@
       var hunter = new Sprite(x, y, 15, 15, 'purple')
       hunter.behave = Hunter
       hunter.cd = 5
+      hunter.kills = 0
       return hunter
     }
 
