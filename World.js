@@ -19,6 +19,8 @@ class World {
     this.setup()
     this.image = new Image()
     this.image.src = "0x72_16x16DungeonTileset.v4.png"
+    this.image2 = new Image()
+    this.image2.src = "tileset-pokemon_dawn.png"
   }
 
   setup() {

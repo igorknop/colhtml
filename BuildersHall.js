@@ -7,7 +7,7 @@ import {Guard} from "./Guard.js"
 
 class BuildersHall extends Sprite{
   constructor(world,x,y){
-    super(world,x,y,10,10,'grey')
+    super(world,x,y,32,35,'grey')
   }
   behave(dt){
     if (this.cd > 0) {
@@ -32,6 +32,14 @@ class BuildersHall extends Sprite{
       }
       if (walker) this.world.people.push(walker)
     }
+  }
+  draw(ctx){
+    ctx.save()
+    ctx.translate(this.x, this.y)
+    //ctx.fillStyle = this.color
+    //ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h)
+    ctx.drawImage(this.world.image2, 242, 1146, 64, 70,-this.w / 2, -this.h / 2, this.w, this.h)
+    ctx.restore()
   }
 }
 
