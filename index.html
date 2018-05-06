@@ -19,6 +19,9 @@
     var monsters = []
     var people = []
     const D = {
+      A_BUILDERS: 'ab',
+      A_WARRIORS: 'aw',
+      A_GUARDS: 'ag',
       MAX_SPRITES: 100,
       MAX_MONSTERS: 5,
       MAX_BUILDINGS: 15,
@@ -34,6 +37,7 @@
       W_LEFT: 'l',
       STOPPED: 's',
     }
+    var creating = D.A_BUILDERS;
 
     function setup() {
       raf = requestAnimationFrame(passo)
@@ -82,11 +86,27 @@
       }
       ctx.fillStyle = 'red'
       ctx.fillText('People: ' + people.length, 20, 10);
-      ctx.fillStyle = 'blue'
+      ctx.fillStyle = 'grey'
       ctx.fillText('Buildings: ' + buildings.length, 110, 10);
       ctx.fillStyle = 'purple'
       ctx.fillText('Monsters: ' + monsters.length, 210, 10);
       prev = t;
+      switch (creating) {
+        case D.A_BUILDERS:
+          ctx.fillStyle = 'red'
+          ctx.fillText('Builders', 20, 20);
+          break;
+        case D.A_WARRIORS:
+          ctx.fillStyle = 'green'
+          ctx.fillText('Warriors', 20, 20);
+          break;
+        case D.A_GUARDS:
+          ctx.fillStyle = 'blue'
+          ctx.fillText('Guards', 20, 20);
+          break;
+        default:
+
+      }
       requestAnimationFrame(passo)
     }
 
@@ -210,6 +230,78 @@
       }
     }
 
+    function RandomWarrior(dt) {
+      if (this.cd > 0) {
+        this.cd -= dt
+      } else {
+        this.cd = D.P_CD
+        if (this.status === D.STOPPED) {
+          var dirm = Math.floor(Math.random() * 5)
+          switch (dirm) {
+            case 0:
+              this.setStatus(D.W_RIGHT)
+              break;
+            case 1:
+              this.setStatus(D.W_DOWN)
+              break;
+            case 2:
+              this.setStatus(D.W_LEFT)
+              break;
+            case 3:
+              this.setStatus(D.W_UP)
+              break;
+            case 4:
+              this.setStatus(D.STOPPED)
+              this.cd = 2 * D.B_CD
+              break
+          }
+          return
+        } else {
+          switch (this.status) {
+            case D.W_RIGHT:
+              this.setStatus(D.W_DOWN)
+              break;
+            case D.W_DOWN:
+              this.setStatus(D.W_LEFT)
+              break;
+            case D.W_LEFT:
+              this.setStatus(D.W_UP)
+              break;
+            case D.W_UP:
+              this.setStatus(D.STOPPED)
+              break;
+          }
+        }
+      }
+    }
+
+    function RandomGuard(dt) {
+      if (this.cd > 0) {
+        this.cd -= dt
+      } else {
+        this.cd = D.P_CD
+        var dirm = Math.floor(Math.random() * 10)
+        switch (dirm) {
+          case 0:
+            this.setStatus(D.W_RIGHT)
+            break;
+          case 1:
+            this.setStatus(D.W_DOWN)
+            break;
+          case 2:
+            this.setStatus(D.W_LEFT)
+            break;
+          case 3:
+            this.setStatus(D.W_UP)
+            break;
+          default:
+            this.setStatus(D.STOPPED)
+            this.cd = 3 * D.B_CD
+            break
+        }
+      }
+    }
+
     function Hunter(dt) {
       if (monsters.length < D.MAX_MONSTERS && this.kills >= D.M_S) {
         this.kills = 0
@@ -241,15 +333,32 @@
 
     function spawnWalker(x, y) {
       if (people.length >= D.MAX_SPRITES) return;
-      var walker = new Sprite(x, y, 5, 5, 'red')
-      walker.behave = RandomWanderer
-      walker.cd = D.P_CD
-      return walker
+      switch (creating) {
+        case D.A_WARRIORS:
+          var walker = new Sprite(x, y, 5, 5, 'green')
+          walker.behave = RandomWarrior
+          walker.cd = D.P_CD
+          return walker
+          break;
+        case D.A_GUARDS:
+          var walker = new Sprite(x, y, 5, 5, 'blue')
+          walker.behave = RandomGuard
+          walker.cd = D.P_CD
+          return walker
+          break;
+        default:
+          var walker = new Sprite(x, y, 5, 5, 'red')
+          walker.behave = RandomWanderer
+          walker.cd = D.P_CD
+          return walker
+
+      }
+
     }
 
     function spawnWalkerSpawner(x, y) {
       if (buildings.length >= D.MAX_BUILDINGS) return;
-      var walker = new Sprite(x, y, 10, 10, 'blue')
+      var walker = new Sprite(x, y, 10, 10, 'grey')
       walker.behave = RandomWandererSpawner
       walker.cd = D.B_CD
       return walker
@@ -278,6 +387,21 @@
 
 
     setup()
+    addEventListener('keyup', function(e) {
+      switch (e.keyCode) {
+        case 65:
+          creating = D.A_BUILDERS
+          break;
+        case 83:
+          creating = D.A_WARRIORS
+          break;
+        case 68:
+          creating = D.A_GUARDS
+          break;
+        default:
+
+      }
+    })
   </script>
 </body>
 
