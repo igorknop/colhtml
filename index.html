@@ -29,71 +29,14 @@
 
     function setup() {
       raf = requestAnimationFrame(passo)
-      world.people.push(new Builder(world,150, 150))
-      world.monsters.push(new Monster(world, 20, 20))
+      world.setup()
     }
 
     function passo(t) {
       dt = (t - prev) / 1000;
       ctx.fillStyle = "black";
       ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-      for (var i = world.people.length - 1; i >= 0; i--) {
-        if (food <= 0 && foodcd <= 0) {
-          world.people.splice(i, 1)
-          foodcd = 0.5
-          continue;
-        } else {
-          foodcd -= dt
-        }
-        world.people[i].behave(dt)
-        world.people[i].move(dt)
-        world.people[i].draw(ctx)
-      }
-      for (var i = world.buildings.length - 1; i >= 0; i--) {
-        world.buildings[i].behave(dt)
-        world.buildings[i].move(dt)
-        world.buildings[i].draw(ctx)
-      }
-      for (var i = world.monsters.length - 1; i >= 0; i--) {
-        world.monsters[i].behave(dt)
-        world.monsters[i].move(dt)
-        world.monsters[i].draw(ctx)
-      }
-
-      for (var j = world.monsters.length - 1; j >= 0; j--) {
-        if (world.monsters[j].w < D.MIN_MONSTER_SIZE) {
-          world.monsters.splice(j, 1)
-          continue
-        }
-        for (var i = world.people.length - 1; i >= 0; i--) {
-          if (world.people[i].isHit(world.monsters[j])) {
-            if (world.people[i].color === 'yellow') {
-              world.monsters[j].w -= D.P_FD
-              world.monsters[j].h -= D.P_FD
-            } else if (world.people[i].color === 'green') {
-              world.monsters[j].w -= D.P_WD
-              world.monsters[j].h -= D.P_WD
-            } else if (world.people[i].color === 'blue') {
-              world.monsters[j].w -= D.P_GD
-              world.monsters[j].h -= D.P_GD
-            } else {
-              world.monsters[j].w -= D.P_BD
-              world.monsters[j].h -= D.P_BD
-              world.monsters[j].kills++
-            }
-            world.people.splice(i, 1)
-          }
-        }
-        for (var i = world.buildings.length - 1; i >= 0; i--) {
-          if (world.buildings[i].isHit(world.monsters[j]) &&
-            world.monsters[j].w >= 2 * world.buildings[i].w) {
-            //world.monsters[j].w -= world.buildings[i].w
-            //world.monsters[j].h -= world.buildings[i].w
-            world.buildings.splice(i, 1)
-          }
-        }
-      }
+      world.step(dt, ctx)
       ctx.fillStyle = 'red'
       ctx.fillText('People: ' + world.people.length, 20, 10);
       ctx.fillStyle = 'grey'
@@ -101,7 +44,7 @@
       ctx.fillStyle = 'purple'
       ctx.fillText('Monsters: ' + world.monsters.length, 210, 10);
       prev = t;
-      switch (creating) {
+      switch (world.creating) {
         case D.A_FARMERS:
           ctx.fillStyle = 'yellow'
           ctx.fillText('Farmers', 20, 20);
@@ -120,49 +63,13 @@
           break;
       }
       ctx.fillStyle = 'yellow'
-      food -= world.people.length / 10 * dt
-      food = food > 0 ? food : 0
-      ctx.fillText('Food: ' + Math.ceil(food), 110, 20);
+      world.food -= world.people.length / 10 * dt
+      world.food = world.food > 0 ? world.food : 0
+      ctx.fillText('Food: ' + Math.ceil(world.food), 110, 20);
 
       requestAnimationFrame(passo)
     }
 
-
-    function RandomWanderer(dt) {
-      if (this.cd > 0) {
-        this.cd -= dt
-      } else {
-        this.cd = D.PEOPLE_MOVE_CD
-        var dirm = Math.floor(Math.random() * 5)
-        switch (dirm) {
-          case 0:
-            this.setStatus(D.W_RIGHT)
-            break;
-          case 1:
-            this.setStatus(D.W_DOWN)
-            break;
-          case 2:
-            this.setStatus(D.W_LEFT)
-            break;
-          case 3:
-            this.setStatus(D.W_UP)
-            break;
-          case 4:
-            this.setStatus(D.STOPPED)
-            this.cd = 2 * D.B_CD
-            var spawner = spawnWalkerSpawner(this.x, this.y)
-            if (spawner) {
-              world.buildings.push(spawner)
-              for (var i = world.buildings.length - 2; i >= 0; i--) {
-                if (world.buildings[i].isHit(spawner)) {
-                  world.buildings.pop()
-                }
-              }
-            }
-            break
-        }
-      }
-    }
 
     function RandomFarmer(dt) {
       if (this.cd > 0) {
@@ -323,8 +230,7 @@
           return walker
           break;
         default:
-          var walker = new Sprite(x, y, 5, 5, 'red')
-          walker.behave = RandomWanderer
+          var walker = new Builder(world, x, y, 5, 5, 'red')
           walker.cd = D.PEOPLE_BUILDER_SPAWN_CD
           return walker
 
@@ -348,34 +254,7 @@
       return walker
     }
 
-    function spawnHunter(x, y) {
-      if (world.monsters.length >= D.MAX_MONSTERS) return;
-      var hunter = new Sprite(x, y, D.M_W, D.M_W, 'purple')
-      hunter.behave = Hunter
-      hunter.cd = D.M_S
-      hunter.kills = 0
-      return hunter
-    }
 
-
-    function RandomWandererSpawner(dt) {
-      if (this.cd > 0) {
-        this.cd -= dt
-      } else {
-        switch (creating) {
-          case D.A_WARRIORS:
-            this.cd = D.PEOPLE_WARRIOR_SPAWN_CD
-            break;
-          case D.A_GUARDS:
-            this.cd = D.PEOPLE_GUARD_SPAWN_CD
-            break;
-          default:
-            this.cd = D.PEOPLE_BUILDER_SPAWN_CD
-        }
-        var walker = spawnWalker(this.x, this.y)
-        if (walker) world.people.push(walker)
-      }
-    }
 
     function Farm(dt) {
       if (this.cd > 0) {
@@ -393,16 +272,16 @@
       console.log(e.keyCode);
       switch (e.keyCode) {
         case 65:
-          creating = D.A_BUILDERS
+          world.creating = D.A_BUILDERS
           break;
         case 70:
-          creating = D.A_FARMERS
+          world.creating = D.A_FARMERS
           break;
         case 83:
-          creating = D.A_WARRIORS
+          world.creating = D.A_WARRIORS
           break;
         case 68:
-          creating = D.A_GUARDS
+          world.creating = D.A_GUARDS
           break;
         default:
 
