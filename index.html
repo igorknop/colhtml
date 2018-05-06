@@ -37,38 +37,47 @@
 
     function passo(t) {
       dt = (t - prev) / 1000;
-      ctx.fillStyle = "black";
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
       world.step(dt, ctx)
-      ctx.fillStyle = 'red'
-      ctx.fillText('People: ' + world.people.length, 20, 10);
+      ctx.fillStyle = 'darkred'
+      ctx.strokeStyle = 'black'
+      ctx.font = '12px Impact'
+      ctx.fillText('People: ' + world.people.length, 20, 13);
+      //ctx.strokeText('People: ' + world.people.length, 20, 13);
       ctx.fillStyle = 'grey'
-      ctx.fillText('Buildings: ' + world.buildings.length, 110, 10);
+      ctx.fillText('Buildings: ' + world.buildings.length, 110, 13);
+      //ctx.strokeText('Buildings: ' + world.buildings.length, 110, 13);
       ctx.fillStyle = 'purple'
-      ctx.fillText('Monsters: ' + world.monsters.length, 210, 10);
+      ctx.fillText('Monsters: ' + world.monsters.length, 210, 13);
+      //ctx.strokeText('Monsters: ' + world.monsters.length, 210, 13);
       prev = t;
       switch (world.creating) {
         case D.A_FARMERS:
           ctx.fillStyle = 'yellow'
-          ctx.fillText('Farmers', 20, 20);
+          ctx.fillText('Farmers', 20, 25);
+        //  ctx.strokeText('Farmers', 20, 25);
           break;
         case D.A_BUILDERS:
-          ctx.fillStyle = 'red'
-          ctx.fillText('Builders', 20, 20);
+          ctx.fillStyle = 'darkred'
+          ctx.fillText('Builders', 20, 25);
+        //  ctx.strokeText('Builders', 20, 25);
           break;
         case D.A_WARRIORS:
           ctx.fillStyle = 'green'
-          ctx.fillText('Warriors', 20, 20);
+          ctx.fillText('Warriors', 20, 25);
+        //  ctx.strokeText('Warriors', 20, 25);
           break;
         case D.A_GUARDS:
           ctx.fillStyle = 'blue'
-          ctx.fillText('Guards', 20, 20);
+          ctx.fillText('Guards', 20, 25);
+        //  ctx.strokeText('Guards', 20, 25);
           break;
       }
-      ctx.fillStyle = 'yellow'
+      ctx.fillStyle = 'orange'
       world.food -= world.people.length / 10 * dt
       world.food = world.food > 0 ? world.food : 0
-      ctx.fillText('Food: ' + Math.ceil(world.food), 110, 20);
+      ctx.fillText('Food: ' + Math.ceil(world.food), 110, 25);
+    //  ctx.strokeText('Food: ' + Math.ceil(world.food), 110, 25);
+    ctx.fillText('Level/Score: ' + world.level+'/'+Math.ceil(world.score()), 210, 25);
 
       requestAnimationFrame(passo)
     }
@@ -143,7 +152,6 @@
 
     setup()
     addEventListener('keyup', function(e) {
-      console.log(e.keyCode);
       switch (e.keyCode) {
         case 65:
           world.creating = D.A_BUILDERS
