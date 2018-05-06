@@ -17,17 +17,19 @@
     var dists = []
     var sprites = []
     const D = {
-      ACCBAS : 20,
-      W_UP : 'u',
-      W_DOWN : 'd',
-      W_RIGHT : 'r',
-      W_LEFT : 'l',
-      STOPPED : 's',
+      ACCBAS: 20,
+      W_UP: 'u',
+      W_DOWN: 'd',
+      W_RIGHT: 'r',
+      W_LEFT: 'l',
+      STOPPED: 's',
     }
+
     function setup() {
       raf = requestAnimationFrame(passo)
-      sprites.push(new Sprite(100,100,20,20))
-      sprites.push(new Sprite(150,150,5,5,'red'))
+      sprites.push(new Sprite(100, 100, 20, 20))
+      sprites.push(new Sprite(150, 150, 5, 5, 'red'))
+      sprites[1].behave = RandomWanderer
     }
 
     function passo(t) {
@@ -35,6 +37,7 @@
       ctx.fillStyle = "black";
       ctx.fillRect(0, 0, canvas.width, canvas.height)
       for (var i = 0; i < sprites.length; i++) {
+        sprites[i].behave(dt)
         sprites[i].move(dt)
         sprites[i].draw(ctx)
       }
@@ -42,7 +45,7 @@
       requestAnimationFrame(passo)
     }
 
-    function Sprite(x=0,y=0,w=5,h=5,c='blue') {
+    function Sprite(x = 0, y = 0, w = 5, h = 5, c = 'blue') {
       this.x = x;
       this.y = y;
       this.w = w;
@@ -51,31 +54,30 @@
       this.vy = 0;
       this.ax = 0;
       this.ay = 0;
+      this.cd = 0;
       this.color = c
       this.status = D.STOPPED
     }
 
 
     Sprite.prototype.setStatus = function(status) {
+      this.status = status
       switch (status) {
         case D.W_RIGHT:
-          this.ax = D.ACCBAS;
-          this.ay = 0;
-          this.status = D.W_RIGHT
+          this.vx = D.ACCBAS;
+          this.vy = 0;
           break;
         case D.W_LEFT:
-          this.ax = -D.ACCBAS;
-          this.ay = 0;
-          this.status = D.W_LEFT
+          this.vx = -D.ACCBAS;
+          this.vy = 0;
           break;
         case D.W_DOWN:
-          this.ax = 0;
-          this.ay = D.ACCBAS;
-          this.status = D.W_DOWN
+          this.vx = 0;
+          this.vy = D.ACCBAS;
           break;
         case D.W_UP:
-          this.ax = 0;
-          this.ay = -D.ACCBAS;
+          this.vx = 0;
+          this.vy = -D.ACCBAS;
           this.status = D.W_UP
           break;
         case D.STOPPED:
@@ -84,11 +86,15 @@
           this.status = D.STOPPED
           this.vx = 0;
           this.vy = 0;
+          this.ax = 0;
+          this.ay = 0;
       }
     }
     Sprite.prototype.move = function(dt) {
       this.vx += this.ax * dt
       this.x += this.vx * dt
+      this.vy += this.ay * dt
+      this.y += this.vy * dt
     }
     Sprite.prototype.draw = function(ctx) {
       ctx.save()
@@ -97,9 +103,33 @@
       ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h)
       ctx.restore()
     }
+    Sprite.prototype.behave = function(dt) {}
+
+    function RandomWanderer(dt) {
+      if (this.cd > 0) {
+        this.cd -= dt
+      } else {
+        this.cd = 2.0
+        var dirm = Math.floor(Math.random() * 4)
+        console.log(dirm)
+        switch (dirm) {
+          case 0:
+            this.setStatus(D.W_RIGHT)
+            break;
+          case 1:
+            this.setStatus(D.W_DOWN)
+            break;
+          case 2:
+            this.setStatus(D.W_LEFT)
+            break;
+          case 3:
+            this.setStatus(D.W_UP)
+            break;
+        }
+      }
+    }
 
     setup()
-
   </script>
 </body>
 
