@@ -26,8 +26,12 @@
       MAX_MONSTERS: 5,
       MAX_BUILDINGS: 15,
       MIN_MONSTER_SIZE: 5,
-      ACCBAS: 50,
-      P_CD: 1,
+      PEOPLE_VEL: 50,
+      PEOPLE_MOVE_CD: 1,
+      PEOPLE_BUILDER_SPAWN_CD: 3,
+      PEOPLE_WARRIOR_SPAWN_CD: 2,
+
+      PEOPLE_GUARD_SPAWN_CD: 5,
       P_BD: -1,
       P_WD: 1,
       P_GD: 5,
@@ -145,20 +149,20 @@
       this.status = status
       switch (status) {
         case D.W_RIGHT:
-          this.vx = D.ACCBAS;
+          this.vx = D.PEOPLE_VEL;
           this.vy = 0;
           break;
         case D.W_LEFT:
-          this.vx = -D.ACCBAS;
+          this.vx = -D.PEOPLE_VEL;
           this.vy = 0;
           break;
         case D.W_DOWN:
           this.vx = 0;
-          this.vy = D.ACCBAS;
+          this.vy = D.PEOPLE_VEL;
           break;
         case D.W_UP:
           this.vx = 0;
-          this.vy = -D.ACCBAS;
+          this.vy = -D.PEOPLE_VEL;
           this.status = D.W_UP
           break;
         case D.STOPPED:
@@ -214,7 +218,7 @@
       if (this.cd > 0) {
         this.cd -= dt
       } else {
-        this.cd = D.P_CD
+        this.cd = D.PEOPLE_MOVE_CD
         var dirm = Math.floor(Math.random() * 5)
         switch (dirm) {
           case 0:
@@ -250,7 +254,7 @@
       if (this.cd > 0) {
         this.cd -= dt
       } else {
-        this.cd = D.P_CD
+        this.cd = D.PEOPLE_MOVE_CD
         if (this.status === D.STOPPED) {
           var dirm = Math.floor(Math.random() * 5)
           switch (dirm) {
@@ -295,7 +299,7 @@
       if (this.cd > 0) {
         this.cd -= dt
       } else {
-        this.cd = D.P_CD
+        this.cd = D.PEOPLE_MOVE_CD
         var dirm = Math.floor(Math.random() * 10)
         switch (dirm) {
           case 0:
@@ -353,19 +357,19 @@
         case D.A_WARRIORS:
           var walker = new Sprite(x, y, 5, 5, 'green')
           walker.behave = RandomWarrior
-          walker.cd = D.P_CD
+          walker.cd = D.PEOPLE_WARRIOR_SPAWN_CD
           return walker
           break;
         case D.A_GUARDS:
           var walker = new Sprite(x, y, 5, 5, 'blue')
           walker.behave = RandomGuard
-          walker.cd = D.P_CD
+          walker.cd = D.PEOPLE_GUARD_SPAWN_CD
           return walker
           break;
         default:
           var walker = new Sprite(x, y, 5, 5, 'red')
           walker.behave = RandomWanderer
-          walker.cd = D.P_CD
+          walker.cd = D.PEOPLE_BUILDER_SPAWN_CD
           return walker
 
       }
@@ -394,7 +398,16 @@
       if (this.cd > 0) {
         this.cd -= dt
       } else {
-        this.cd = 5.0
+        switch (creating) {
+          case D.A_WARRIORS:
+            this.cd = D.PEOPLE_WARRIOR_SPAWN_CD
+            break;
+          case D.A_GUARDS:
+            this.cd = D.PEOPLE_GUARD_SPAWN_CD
+            break;
+          default:
+            this.cd = D.PEOPLE_BUILDER_SPAWN_CD
+        }
         var walker = spawnWalker(this.x, this.y)
         if (walker) people.push(walker)
       }
