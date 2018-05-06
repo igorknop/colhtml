@@ -3,7 +3,7 @@ import {Sprite} from "./Sprite.js"
 
 class Monster extends Sprite {
   constructor(world, x, y) {
-    super(world, x, y, 5, 5, 'purple')
+    super(world, x, y, 32, 31, 'purple')
     this.kills = 0
     this.cd = 0
   }
@@ -35,6 +35,14 @@ class Monster extends Sprite {
           break;
       }
     }
+  }
+  draw(ctx){
+    ctx.save()
+    ctx.translate(this.x, this.y)
+    //ctx.fillStyle = this.color
+    //ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h)
+    ctx.drawImage(this.world.image, 161, 178, 32, 31,-this.w / 2, -this.h / 2, this.w, this.h)
+    ctx.restore()
   }
 }
 

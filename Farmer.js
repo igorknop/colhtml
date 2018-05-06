@@ -4,7 +4,7 @@ import {Farm} from "./Farm.js"
 
 class Farmer extends Sprite {
   constructor(world, x, y) {
-    super(world, x, y, 5, 5, 'yellow')
+    super(world, x, y, 13, 16, 'yellow')
   }
   behave(dt) {
     if (this.cd > 0) {
@@ -41,6 +41,14 @@ class Farmer extends Sprite {
           break
       }
     }
+  }
+  draw(ctx){
+    ctx.save()
+    ctx.translate(this.x, this.y)
+    //ctx.fillStyle = this.color
+    //ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h)
+    ctx.drawImage(this.world.image, 99, 240, 13, 16,-this.w / 2, -this.h / 2, this.w, this.h)
+    ctx.restore()
   }
 }
 
