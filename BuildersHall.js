@@ -13,6 +13,7 @@ class BuildersHall extends Sprite {
     if (this.cd > 0) {
       this.cd -= dt
     } else {
+      if(this.world.people.length>=D.MAX_SPRITES) return
       switch (this.world.creating) {
         case D.A_WARRIORS:
           this.cd = D.PEOPLE_WARRIOR_SPAWN_CD

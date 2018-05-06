@@ -3,7 +3,7 @@ import {Sprite} from "./Sprite.js"
 
 class Monster extends Sprite {
   constructor(world, x, y) {
-    super(world, x, y, 32, 31, 'purple')
+    super(world, x, y, 32, 32, 'purple')
     this.kills = 0
     this.cd = 0
   }
