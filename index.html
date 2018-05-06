@@ -9,11 +9,13 @@
 
 <body>
   <canvas id="canvas" width="300" height="300"></canvas>
-  <script>
+  <script type="module">
+    import {D} from "./Config.js"
+    import {Sprite} from "./Sprite.js"
     var canvas = document.getElementsByTagName("canvas")[0]
     var ctx = canvas.getContext("2d")
 
-    var dt = prev = 0
+    var dt = 0, prev = 0
     var raf
     var dists = []
     var buildings = []
@@ -21,35 +23,6 @@
     var people = []
     var food = 50
     var foodcd = 0
-    const D = {
-      A_FARMERS: 'af',
-      A_BUILDERS: 'ab',
-      A_WARRIORS: 'aw',
-      A_GUARDS: 'ag',
-      MAX_SPRITES: 100,
-      MAX_MONSTERS: 5,
-      MAX_BUILDINGS: 15,
-      MIN_MONSTER_SIZE: 5,
-      PEOPLE_VEL: 50,
-      PEOPLE_MOVE_CD: 1,
-      PEOPLE_FARMER_SPAWN_CD: 1,
-      PEOPLE_BUILDER_SPAWN_CD: 2,
-      PEOPLE_WARRIOR_SPAWN_CD: 3,
-      PEOPLE_GUARD_SPAWN_CD: 4,
-      P_FD: -1,
-      P_BD: -1,
-      P_WD: 1,
-      P_GD: 5,
-      B_CD: 1,
-      M_CD: 3,
-      M_S: 3,
-      M_W: 10,
-      W_UP: 'u',
-      W_DOWN: 'd',
-      W_RIGHT: 'r',
-      W_LEFT: 'l',
-      STOPPED: 's',
-    }
     var creating = D.A_BUILDERS;
 
     function setup() {
@@ -152,89 +125,6 @@
       requestAnimationFrame(passo)
     }
 
-    function Sprite(x = 0, y = 0, w = 5, h = 5, c = 'blue') {
-      this.x = x;
-      this.y = y;
-      this.w = w;
-      this.h = h;
-      this.vx = 0;
-      this.vy = 0;
-      this.ax = 0;
-      this.ay = 0;
-      this.cd = 0;
-      this.color = c
-      this.status = D.STOPPED
-    }
-
-
-    Sprite.prototype.setStatus = function(status) {
-      this.status = status
-      switch (status) {
-        case D.W_RIGHT:
-          this.vx = D.PEOPLE_VEL;
-          this.vy = 0;
-          break;
-        case D.W_LEFT:
-          this.vx = -D.PEOPLE_VEL;
-          this.vy = 0;
-          break;
-        case D.W_DOWN:
-          this.vx = 0;
-          this.vy = D.PEOPLE_VEL;
-          break;
-        case D.W_UP:
-          this.vx = 0;
-          this.vy = -D.PEOPLE_VEL;
-          this.status = D.W_UP
-          break;
-        case D.STOPPED:
-          this.status = D.STOPPED
-        default:
-          this.status = D.STOPPED
-          this.vx = 0;
-          this.vy = 0;
-          this.ax = 0;
-          this.ay = 0;
-      }
-    }
-    Sprite.prototype.move = function(dt) {
-      this.vx += this.ax * dt
-      this.x += this.vx * dt
-      this.vy += this.ay * dt
-      this.y += this.vy * dt
-
-      if (this.x - this.w / 2 < 10) {
-        this.x = this.w / 2 + 10
-        this.setStatus(D.W_RIGHT)
-      }
-      if (this.x + this.w / 2 > canvas.width - 10) {
-        this.x = canvas.width - this.w / 2 - 10
-        this.setStatus(D.W_LEFT)
-      }
-      if (this.y - this.h / 2 < 40) {
-        this.y = this.h / 2 + 40
-        this.setStatus(D.W_DOWN)
-      }
-      if (this.y + this.h / 2 > canvas.height - 10) {
-        this.y = canvas.height - this.h / 2 - 10
-        this.setStatus(D.W_UP)
-      }
-    }
-    Sprite.prototype.draw = function(ctx) {
-      ctx.save()
-      ctx.translate(this.x, this.y)
-      ctx.fillStyle = this.color
-      ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h)
-      ctx.restore()
-    }
-    Sprite.prototype.behave = function(dt) {}
-    Sprite.prototype.isHit = function(a) {
-      if (this.x + this.w / 2 < a.x - a.w / 2) return false
-      if (this.x - this.w / 2 > a.x + a.w / 2) return false
-      if (this.y + this.h / 2 < a.y - a.h / 2) return false
-      if (this.y - this.h / 2 > a.y + a.h / 2) return false
-      return true
-    };
 
     function RandomWanderer(dt) {
       if (this.cd > 0) {
