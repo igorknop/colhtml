@@ -1,6 +1,7 @@
 import {D} from "./Config.js"
 class Sprite {
-  constructor(x = 0, y = 0, w = 5, h = 5, c = 'blue') {
+  constructor(world, x = 0, y = 0, w = 5, h = 5, c = 'blue') {
+    this._world = world
     this.x = x;
     this.y = y;
     this.w = w;
@@ -12,6 +13,15 @@ class Sprite {
     this.cd = 0;
     this.color = c
     this.status = D.STOPPED
+  }
+  set world(world){
+    if(typeof world !== 'object'){
+      throw new Error("World shold be an object. Not "+world)
+    }
+    this._world = world
+  }
+  get world(){
+    return this._world
   }
   setStatus(status) {
     this.status = status
