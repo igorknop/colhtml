@@ -141,20 +141,20 @@
       this.vy += this.ay * dt
       this.y += this.vy * dt
 
-      if (this.x < 0) {
-        this.x = 0
+      if (this.x - this.w / 2 < 0) {
+        this.x = this.w / 2
         this.setStatus(D.W_RIGHT)
       }
-      if (this.x > canvas.width) {
-        this.x = canvas.width
+      if (this.x + this.w / 2 > canvas.width) {
+        this.x = canvas.width - this.w / 2
         this.setStatus(D.W_LEFT)
       }
-      if (this.y < 0) {
-        this.y = 0
+      if (this.y - this.h / 2 < 0) {
+        this.y = this.h / 2
         this.setStatus(D.W_DOWN)
       }
-      if (this.y > canvas.height) {
-        this.y = canvas.height
+      if (this.y + this.h / 2 > canvas.height) {
+        this.y = canvas.height - this.h / 2
         this.setStatus(D.W_UP)
       }
     }
@@ -199,7 +199,7 @@
             var spawner = spawnWalkerSpawner(this.x, this.y)
             if (spawner) {
               buildings.push(spawner)
-              for (var i = buildings.length-2;i>=0; i--) {
+              for (var i = buildings.length - 2; i >= 0; i--) {
                 if (buildings[i].isHit(spawner)) {
                   buildings.pop()
                 }
@@ -213,7 +213,7 @@
     function Hunter(dt) {
       if (monsters.length < D.MAX_MONSTERS && this.kills >= D.M_S) {
         this.kills = 0
-        this.w = this.h = D.M_W
+        //this.w = this.h = D.M_W
         var hunter = spawnHunter(this.x, this.y)
         if (hunter) monsters.push(hunter)
       }
