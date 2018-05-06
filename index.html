@@ -27,6 +27,7 @@
       B_CD: 1,
       M_CD: 3,
       M_S: 3,
+      M_W: 10,
       W_UP: 'u',
       W_DOWN: 'd',
       W_RIGHT: 'r',
@@ -61,12 +62,21 @@
         monsters[i].draw(ctx)
       }
 
-      for (var i = people.length-1; i>=0; i--) {
-        for (var j = monsters.length-1; j>=0; j--) {
-          if(people[i].isHit(monsters[j])){
-            people.splice(i,1)
+      for (var j = monsters.length - 1; j >= 0; j--) {
+        for (var i = people.length - 1; i >= 0; i--) {
+          if (people[i].isHit(monsters[j])) {
+            people.splice(i, 1)
             monsters[j].kills++
-            break
+              monsters[j].w++
+              monsters[j].h++
+          }
+        }
+        for (var i = buildings.length - 1; i >= 0; i--) {
+          if (buildings[i].isHit(monsters[j]) &&
+            monsters[j].w > 2 * buildings[i].w) {
+            //monsters[j].w -= buildings[i].w
+            //monsters[j].h -= buildings[i].w
+            buildings.splice(i, 1)
           }
         }
       }
@@ -185,19 +195,27 @@
             break;
           case 4:
             this.setStatus(D.STOPPED)
-            this.cd = D.P_CD
+            this.cd = 2 * D.B_CD
             var spawner = spawnWalkerSpawner(this.x, this.y)
-            if (spawner) buildings.push(spawner)
+            if (spawner) {
+              buildings.push(spawner)
+              for (var i = buildings.length-2;i>=0; i--) {
+                if (buildings[i].isHit(spawner)) {
+                  buildings.pop()
+                }
+              }
+            }
             break
         }
       }
     }
 
     function Hunter(dt) {
-      if(this.kills >= D.M_S){
+      if (monsters.length < D.MAX_MONSTERS && this.kills >= D.M_S) {
         this.kills = 0
+        this.w = this.h = D.M_W
         var hunter = spawnHunter(this.x, this.y)
-        if(hunter) monsters.push(hunter)
+        if (hunter) monsters.push(hunter)
       }
       if (this.cd > 0) {
         this.cd -= dt
@@ -239,9 +257,9 @@
 
     function spawnHunter(x, y) {
       if (monsters.length >= D.MAX_MONSTERS) return;
-      var hunter = new Sprite(x, y, 15, 15, 'purple')
+      var hunter = new Sprite(x, y, D.M_W, D.M_W, 'purple')
       hunter.behave = Hunter
-      hunter.cd = 5
+      hunter.cd = D.M_S
       hunter.kills = 0
       return hunter
     }
