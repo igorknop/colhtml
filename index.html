@@ -17,6 +17,7 @@
     var dists = []
     var sprites = []
     const D = {
+      MAX_SPRITES: 100,
       ACCBAS: 20,
       W_UP: 'u',
       W_DOWN: 'd',
@@ -27,9 +28,8 @@
 
     function setup() {
       raf = requestAnimationFrame(passo)
-      sprites.push(new Sprite(100, 100, 20, 20))
-      sprites.push(new Sprite(150, 150, 5, 5, 'red'))
-      sprites[1].behave = RandomWanderer
+      sprites.push(spawnWalker(150,150))
+      sprites.push(spawnWalker(150,150))
     }
 
     function passo(t) {
@@ -95,6 +95,11 @@
       this.x += this.vx * dt
       this.vy += this.ay * dt
       this.y += this.vy * dt
+
+      if(this.x<0) this.x = 0
+      if(this.x>canvas.width) this.x = canvas.width
+      if(this.y<0) this.y = 0
+      if(this.y>canvas.height) this.y = canvas.height
     }
     Sprite.prototype.draw = function(ctx) {
       ctx.save()
@@ -110,7 +115,7 @@
         this.cd -= dt
       } else {
         this.cd = 2.0
-        var dirm = Math.floor(Math.random() * 4)
+        var dirm = Math.floor(Math.random() * 5)
         switch (dirm) {
           case 0:
             this.setStatus(D.W_RIGHT)
@@ -124,9 +129,42 @@
           case 3:
             this.setStatus(D.W_UP)
             break;
+            case 4:
+            this.setStatus(D.STOPPED)
+            this.cd = 3
+            var spawner = spawnWalkerSpawner(this.x, this.y)
+            if(spawner) sprites.push(spawner)
+            break
         }
       }
     }
+
+    function spawnWalker(x, y) {
+      if(sprites.length>D.MAX_SPRITES) return;
+        var walker = new Sprite(x,y,5,5,'red')
+        walker.behave = RandomWanderer
+        walker.cd = 1
+        return walker
+    }
+
+    function spawnWalkerSpawner(x, y) {
+      if(sprites.length>D.MAX_SPRITES) return;
+        var walker = new Sprite(x,y,10,10,'blue')
+        walker.behave = RandomWandererSpawner
+        walker.cd = 5
+        return walker
+    }
+
+    function RandomWandererSpawner(dt) {
+      if (this.cd > 0) {
+        this.cd -= dt
+      } else {
+        this.cd = 5.0
+        var walker = spawnWalker(this.x, this.y)
+        if(walker) sprites.push(walker)
+      }
+    }
+
 
     setup()
   </script>
