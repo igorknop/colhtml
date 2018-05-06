@@ -20,6 +20,8 @@
     var people = []
     const D = {
       MAX_SPRITES: 100,
+      MAX_MONSTERS: 5,
+      MAX_BUILDINGS: 15,
       ACCBAS: 20,
       W_UP: 'u',
       W_DOWN: 'd',
@@ -38,21 +40,28 @@
       dt = (t - prev) / 1000;
       ctx.fillStyle = "black";
       ctx.fillRect(0, 0, canvas.width, canvas.height)
-      for (var i = people.length-1; i>=0; i--) {
+
+      for (var i = people.length - 1; i >= 0; i--) {
         people[i].behave(dt)
         people[i].move(dt)
         people[i].draw(ctx)
       }
-      for (var i = buildings.length-1; i>=0; i--) {
+      for (var i = buildings.length - 1; i >= 0; i--) {
         buildings[i].behave(dt)
         buildings[i].move(dt)
         buildings[i].draw(ctx)
       }
-      for (var i = monsters.length-1; i>=0; i--) {
+      for (var i = monsters.length - 1; i >= 0; i--) {
         monsters[i].behave(dt)
         monsters[i].move(dt)
         monsters[i].draw(ctx)
       }
+      ctx.fillStyle = 'red'
+      ctx.fillText('People: ' + people.length, 20, 10);
+      ctx.fillStyle = 'blue'
+      ctx.fillText('Buildings: ' + buildings.length, 110, 10);
+      ctx.fillStyle = 'purple'
+      ctx.fillText('Monsters: ' + monsters.length, 210, 10);
       prev = t;
       requestAnimationFrame(passo)
     }
@@ -182,7 +191,7 @@
     }
 
     function spawnWalker(x, y) {
-      if (people.length > D.MAX_SPRITES) return;
+      if (people.length >= D.MAX_SPRITES) return;
       var walker = new Sprite(x, y, 5, 5, 'red')
       walker.behave = RandomWanderer
       walker.cd = 1
@@ -190,7 +199,7 @@
     }
 
     function spawnWalkerSpawner(x, y) {
-      if (buildings.length > D.MAX_BUILDINGS) return;
+      if (buildings.length >= D.MAX_BUILDINGS) return;
       var walker = new Sprite(x, y, 10, 10, 'blue')
       walker.behave = RandomWandererSpawner
       walker.cd = 5
@@ -198,7 +207,7 @@
     }
 
     function spawnHunter(x, y) {
-      if (monsters.length > D.MAX_MONSTERS) return;
+      if (monsters.length >= D.MAX_MONSTERS) return;
       var hunter = new Sprite(x, y, 15, 15, 'purple')
       hunter.behave = Hunter
       hunter.cd = 5
