@@ -4,6 +4,8 @@ import {Sprite} from "./Sprite.js"
 class Monster extends Sprite {
   constructor(world, x, y) {
     super(world, x, y, 5, 5, 'purple')
+    this.kills = 0
+    this.cd = 0
   }
   behave(dt) {
     if (this.world.monsters.length < D.MAX_MONSTERS && this.kills >= D.M_S) {
