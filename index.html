@@ -15,7 +15,9 @@
     var dt = prev = 0
     var raf
     var dists = []
-    var sprites = []
+    var buildings = []
+    var monsters = []
+    var people = []
     const D = {
       MAX_SPRITES: 100,
       ACCBAS: 20,
@@ -28,18 +30,28 @@
 
     function setup() {
       raf = requestAnimationFrame(passo)
-      sprites.push(spawnWalker(150,150))
-      sprites.push(spawnWalker(150,150))
+      people.push(spawnWalker(150, 150))
+      monsters.push(spawnHunter(20, 20))
     }
 
     function passo(t) {
       dt = (t - prev) / 1000;
       ctx.fillStyle = "black";
       ctx.fillRect(0, 0, canvas.width, canvas.height)
-      for (var i = 0; i < sprites.length; i++) {
-        sprites[i].behave(dt)
-        sprites[i].move(dt)
-        sprites[i].draw(ctx)
+      for (var i = people.length-1; i>=0; i--) {
+        people[i].behave(dt)
+        people[i].move(dt)
+        people[i].draw(ctx)
+      }
+      for (var i = buildings.length-1; i>=0; i--) {
+        buildings[i].behave(dt)
+        buildings[i].move(dt)
+        buildings[i].draw(ctx)
+      }
+      for (var i = monsters.length-1; i>=0; i--) {
+        monsters[i].behave(dt)
+        monsters[i].move(dt)
+        monsters[i].draw(ctx)
       }
       prev = t;
       requestAnimationFrame(passo)
@@ -96,10 +108,10 @@
       this.vy += this.ay * dt
       this.y += this.vy * dt
 
-      if(this.x<0) this.x = 0
-      if(this.x>canvas.width) this.x = canvas.width
-      if(this.y<0) this.y = 0
-      if(this.y>canvas.height) this.y = canvas.height
+      if (this.x < 0) this.x = 0
+      if (this.x > canvas.width) this.x = canvas.width
+      if (this.y < 0) this.y = 0
+      if (this.y > canvas.height) this.y = canvas.height
     }
     Sprite.prototype.draw = function(ctx) {
       ctx.save()
@@ -109,6 +121,13 @@
       ctx.restore()
     }
     Sprite.prototype.behave = function(dt) {}
+    Sprite.prototype.isHit = function(a) {
+      if (this.x + this.w / 2 < a.x - a.w / 2) return false
+      if (this.x - this.w / 2 > a.x + a.w / 2) return false
+      if (this.y + this.h / 2 < a.y - a.h / 2) return false
+      if (this.y - this.h / 2 > a.y + a.h / 2) return false
+      return true
+    };
 
     function RandomWanderer(dt) {
       if (this.cd > 0) {
@@ -129,31 +148,63 @@
           case 3:
             this.setStatus(D.W_UP)
             break;
-            case 4:
+          case 4:
             this.setStatus(D.STOPPED)
             this.cd = 3
             var spawner = spawnWalkerSpawner(this.x, this.y)
-            if(spawner) sprites.push(spawner)
+            if (spawner) buildings.push(spawner)
             break
         }
       }
     }
 
+    function Hunter(dt) {
+      if (this.cd > 0) {
+        this.cd -= dt
+      } else {
+        this.cd = 1.0
+        var dirm = Math.floor(Math.random() * 5)
+        switch (dirm) {
+          case 0:
+            this.setStatus(D.W_RIGHT)
+            break;
+          case 1:
+            this.setStatus(D.W_DOWN)
+            break;
+          case 2:
+            this.setStatus(D.W_LEFT)
+            break;
+          case 3:
+            this.setStatus(D.W_UP)
+            break;
+        }
+      }
+    }
+
     function spawnWalker(x, y) {
-      if(sprites.length>D.MAX_SPRITES) return;
-        var walker = new Sprite(x,y,5,5,'red')
-        walker.behave = RandomWanderer
-        walker.cd = 1
-        return walker
+      if (people.length > D.MAX_SPRITES) return;
+      var walker = new Sprite(x, y, 5, 5, 'red')
+      walker.behave = RandomWanderer
+      walker.cd = 1
+      return walker
     }
 
     function spawnWalkerSpawner(x, y) {
-      if(sprites.length>D.MAX_SPRITES) return;
-        var walker = new Sprite(x,y,10,10,'blue')
-        walker.behave = RandomWandererSpawner
-        walker.cd = 5
-        return walker
+      if (buildings.length > D.MAX_BUILDINGS) return;
+      var walker = new Sprite(x, y, 10, 10, 'blue')
+      walker.behave = RandomWandererSpawner
+      walker.cd = 5
+      return walker
     }
+
+    function spawnHunter(x, y) {
+      if (monsters.length > D.MAX_MONSTERS) return;
+      var hunter = new Sprite(x, y, 15, 15, 'purple')
+      hunter.behave = Hunter
+      hunter.cd = 5
+      return hunter
+    }
+
 
     function RandomWandererSpawner(dt) {
       if (this.cd > 0) {
@@ -161,9 +212,10 @@
       } else {
         this.cd = 5.0
         var walker = spawnWalker(this.x, this.y)
-        if(walker) sprites.push(walker)
+        if (walker) people.push(walker)
       }
     }
+
 
 
     setup()
