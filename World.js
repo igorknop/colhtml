@@ -5,7 +5,9 @@ import {Monster} from "./Monster.js"
 import {BuildersHall} from "./BuildersHall.js"
 
 class World {
-  constructor() {
+  constructor(w,h) {
+    this.width = w
+    this.height = h
     this.state = 0
     this.dt = 0
     this.prev = 0
@@ -52,8 +54,8 @@ class World {
   }
 
   step(dt, ctx) {
-    for (var i = 0; i < 300; i += 32) {
-      for (var j = 0; j < 300; j += 32) {
+    for (var i = 0; i < this.width; i += 32) {
+      for (var j = 0; j < this.height; j += 32) {
         //ctx.drawImage(this.image2, 368,192,32,32,i,j,32,32)
         ctx.drawImage(this.image2, 368, 241, 32, 32, i, j, 32, 32)
       }

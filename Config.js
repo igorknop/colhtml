@@ -1,8 +1,8 @@
 const D = {
-  A_FARMERS: 'af',
-  A_BUILDERS: 'ab',
-  A_WARRIORS: 'aw',
-  A_GUARDS: 'ag',
+  A_FARMERS: 1,
+  A_BUILDERS: 2,
+  A_WARRIORS: 3,
+  A_GUARDS: 4,
   MAX_SPRITES: 100,
   MAX_MONSTERS: 5,
   MAX_BUILDINGS: 15,
