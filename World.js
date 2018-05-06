@@ -45,7 +45,9 @@ class World {
 
     this.people.push(new Builder(this, 150, 150))
     for (var i = 0; i < this.level; i++) {
-      this.monsters.push(new Monster(this, 40*i+10,20))
+      let m = new Monster(this, 40*i+10,20)
+      m.vel += this.level + i
+      this.monsters.push(m)
     }
   }
 

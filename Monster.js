@@ -6,6 +6,7 @@ class Monster extends Sprite {
     super(world, x, y, 32, 32, 'purple')
     this.kills = 0
     this.cd = 0
+    this.vel = this.vel/2
   }
   behave(dt) {
     if (this.world.monsters.length < D.MAX_MONSTERS && this.kills >= D.M_S) {

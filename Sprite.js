@@ -13,6 +13,7 @@ class Sprite {
     this.cd = 0;
     this.color = c
     this.status = D.STOPPED
+    this.vel = D.PEOPLE_VEL
   }
   set world(world){
     if(typeof world !== 'object'){
@@ -27,20 +28,20 @@ class Sprite {
     this.status = status
     switch (status) {
       case D.W_RIGHT:
-        this.vx = D.PEOPLE_VEL;
+        this.vx = this.vel;
         this.vy = 0;
         break;
       case D.W_LEFT:
-        this.vx = -D.PEOPLE_VEL;
+        this.vx = -this.vel;
         this.vy = 0;
         break;
       case D.W_DOWN:
         this.vx = 0;
-        this.vy = D.PEOPLE_VEL;
+        this.vy = this.vel;
         break;
       case D.W_UP:
         this.vx = 0;
-        this.vy = -D.PEOPLE_VEL;
+        this.vy = -this.vel;
         this.status = D.W_UP
         break;
       case D.STOPPED:

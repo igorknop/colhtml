@@ -5,6 +5,7 @@ import {BuildersHall} from "./BuildersHall.js"
 class Guard extends Sprite {
   constructor(world, x, y) {
     super(world, x, y, 15,20,'blue')
+    this.vel = this.vel/2
   }
   behave(dt){
     if (this.cd > 0) {
