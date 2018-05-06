@@ -5,42 +5,46 @@ import {Farmer} from "./Farmer.js"
 import {Warrior} from "./Warrior.js"
 import {Guard} from "./Guard.js"
 
-class BuildersHall extends Sprite{
-  constructor(world,x,y){
-    super(world,x,y,32,35,'grey')
+class BuildersHall extends Sprite {
+  constructor(world, x, y) {
+    super(world, x, y, 32, 32, 'grey')
   }
-  behave(dt){
+  behave(dt) {
     if (this.cd > 0) {
       this.cd -= dt
     } else {
       switch (this.world.creating) {
         case D.A_WARRIORS:
           this.cd = D.PEOPLE_WARRIOR_SPAWN_CD
-          var walker = new Warrior(this.world,this.x, this.y)
+          var walker = new Warrior(this.world, this.x, this.y)
           break;
         case D.A_GUARDS:
           this.cd = D.PEOPLE_GUARD_SPAWN_CD
-          var walker = new Guard(this.world,this.x, this.y)
+          var walker = new Guard(this.world, this.x, this.y)
           break;
         case D.A_FARMERS:
           this.cd = D.PEOPLE_FARMER_SPAWN_CD
-          var walker = new Farmer(this.world,this.x, this.y)
+          var walker = new Farmer(this.world, this.x, this.y)
           break;
         default:
           this.cd = D.PEOPLE_BUILDER_SPAWN_CD
-          var walker = new Builder(this.world,this.x, this.y)
+          var walker = new Builder(this.world, this.x, this.y)
       }
-      if (walker) this.world.people.push(walker)
+      if (walker)
+        this.world.people.push(walker)
     }
   }
-  draw(ctx){
+  move(dt) {}
+  draw(ctx) {
     ctx.save()
     ctx.translate(this.x, this.y)
     //ctx.fillStyle = this.color
     //ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h)
-    ctx.drawImage(this.world.image2, 242, 1146, 64, 70,-this.w / 2, -this.h / 2, this.w, this.h)
+    ctx.drawImage(this.world.image2, 242, 1146, 64, 70, -this.w / 2, -this.h / 2, this.w, this.h)
     ctx.restore()
   }
 }
 
-export {BuildersHall}
+export {
+  BuildersHall
+}

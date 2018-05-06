@@ -7,7 +7,7 @@ import {Guard} from "./Guard.js"
 
 class Farm extends Sprite{
   constructor(world,x,y){
-    super(world,x,y,31,30,'yellow')
+    super(world,x,y,32,32,'yellow')
     this.cd = D.BUILDING_FARM_PROD_CD
   }
   behave(dt){
@@ -18,6 +18,7 @@ class Farm extends Sprite{
       this.world.food += 5
     }
   }
+  move(dt){}
   draw(ctx){
     ctx.save()
     ctx.translate(this.x, this.y)
