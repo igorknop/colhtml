@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title></title>
 </head>
 
@@ -20,6 +21,7 @@
     var people = []
     var food = 100
     const D = {
+      A_FARMERS: 'af',
       A_BUILDERS: 'ab',
       A_WARRIORS: 'aw',
       A_GUARDS: 'ag',
@@ -29,10 +31,11 @@
       MIN_MONSTER_SIZE: 5,
       PEOPLE_VEL: 50,
       PEOPLE_MOVE_CD: 1,
-      PEOPLE_BUILDER_SPAWN_CD: 3,
-      PEOPLE_WARRIOR_SPAWN_CD: 2,
-
-      PEOPLE_GUARD_SPAWN_CD: 5,
+      PEOPLE_FARMER_SPAWN_CD: 1,
+      PEOPLE_BUILDER_SPAWN_CD: 2,
+      PEOPLE_WARRIOR_SPAWN_CD: 3,
+      PEOPLE_GUARD_SPAWN_CD: 4,
+      P_FD: -1,
       P_BD: -1,
       P_WD: 1,
       P_GD: 5,
@@ -76,13 +79,16 @@
       }
 
       for (var j = monsters.length - 1; j >= 0; j--) {
-        if(monsters[j].w<D.MIN_MONSTER_SIZE){
-          monsters.splice(j,1)
+        if (monsters[j].w < D.MIN_MONSTER_SIZE) {
+          monsters.splice(j, 1)
           continue
         }
         for (var i = people.length - 1; i >= 0; i--) {
           if (people[i].isHit(monsters[j])) {
-            if (people[i].color === 'green') {
+            if (people[i].color === 'yellow') {
+              monsters[j].w -= D.P_FD
+              monsters[j].h -= D.P_FD
+            } else if (people[i].color === 'green') {
               monsters[j].w -= D.P_WD
               monsters[j].h -= D.P_WD
             } else if (people[i].color === 'blue') {
@@ -113,6 +119,10 @@
       ctx.fillText('Monsters: ' + monsters.length, 210, 10);
       prev = t;
       switch (creating) {
+        case D.A_FARMERS:
+          ctx.fillStyle = 'yellow'
+          ctx.fillText('Farmers', 20, 20);
+          break;
         case D.A_BUILDERS:
           ctx.fillStyle = 'red'
           ctx.fillText('Builders', 20, 20);
@@ -127,8 +137,8 @@
           break;
       }
       ctx.fillStyle = 'yellow'
-      food -= people.length/10*dt
-      food = food>0?food:0
+      food -= people.length / 10 * dt
+      food = food > 0 ? food : 0
       ctx.fillText('Food: ' + Math.ceil(food), 110, 20);
 
       requestAnimationFrame(passo)
@@ -186,19 +196,19 @@
       this.y += this.vy * dt
 
       if (this.x - this.w / 2 < 10) {
-        this.x = this.w / 2+10
+        this.x = this.w / 2 + 10
         this.setStatus(D.W_RIGHT)
       }
-      if (this.x + this.w / 2 > canvas.width-10) {
-        this.x = canvas.width - this.w / 2 -10
+      if (this.x + this.w / 2 > canvas.width - 10) {
+        this.x = canvas.width - this.w / 2 - 10
         this.setStatus(D.W_LEFT)
       }
       if (this.y - this.h / 2 < 40) {
         this.y = this.h / 2 + 40
         this.setStatus(D.W_DOWN)
       }
-      if (this.y + this.h / 2 > canvas.height-10) {
-        this.y = canvas.height - this.h / 2-10
+      if (this.y + this.h / 2 > canvas.height - 10) {
+        this.y = canvas.height - this.h / 2 - 10
         this.setStatus(D.W_UP)
       }
     }
@@ -241,6 +251,42 @@
             this.setStatus(D.STOPPED)
             this.cd = 2 * D.B_CD
             var spawner = spawnWalkerSpawner(this.x, this.y)
+            if (spawner) {
+              buildings.push(spawner)
+              for (var i = buildings.length - 2; i >= 0; i--) {
+                if (buildings[i].isHit(spawner)) {
+                  buildings.pop()
+                }
+              }
+            }
+            break
+        }
+      }
+    }
+
+    function RandomFarmer(dt) {
+      if (this.cd > 0) {
+        this.cd -= dt
+      } else {
+        this.cd = D.PEOPLE_MOVE_CD
+        var dirm = Math.floor(Math.random() * 5)
+        switch (dirm) {
+          case 0:
+            this.setStatus(D.W_RIGHT)
+            break;
+          case 1:
+            this.setStatus(D.W_DOWN)
+            break;
+          case 2:
+            this.setStatus(D.W_LEFT)
+            break;
+          case 3:
+            this.setStatus(D.W_UP)
+            break;
+          case 4:
+            this.setStatus(D.STOPPED)
+            this.cd = 2 * D.B_CD
+            var spawner = spawnFarm(this.x, this.y)
             if (spawner) {
               buildings.push(spawner)
               for (var i = buildings.length - 2; i >= 0; i--) {
@@ -358,6 +404,12 @@
     function spawnWalker(x, y) {
       if (people.length >= D.MAX_SPRITES) return;
       switch (creating) {
+        case D.A_FARMERS:
+          var walker = new Sprite(x, y, 5, 5, 'yellow')
+          walker.behave = RandomFarmer
+          walker.cd = D.PEOPLE_FARMER_SPAWN_CD
+          return walker
+          break;
         case D.A_WARRIORS:
           var walker = new Sprite(x, y, 5, 5, 'green')
           walker.behave = RandomWarrior
@@ -384,6 +436,14 @@
       if (buildings.length >= D.MAX_BUILDINGS) return;
       var walker = new Sprite(x, y, 10, 10, 'grey')
       walker.behave = RandomWandererSpawner
+      walker.cd = D.B_CD
+      return walker
+    }
+
+    function spawnFarm(x, y) {
+      if (buildings.length >= D.MAX_BUILDINGS) return;
+      var walker = new Sprite(x, y, 10, 10, 'farm')
+      walker.behave = Farm
       walker.cd = D.B_CD
       return walker
     }
@@ -417,13 +477,26 @@
       }
     }
 
+    function Farm(dt) {
+      if (this.cd > 0) {
+        this.cd -= dt
+      } else {
+        this.cd = D.PEOPLE_FARM_SPAWN_CD
+        food += 5*dt
+      }
+    }
+
 
 
     setup()
     addEventListener('keyup', function(e) {
+      console.log(e.keyCode);
       switch (e.keyCode) {
         case 65:
           creating = D.A_BUILDERS
+          break;
+        case 70:
+          creating = D.A_FARMERS
           break;
         case 83:
           creating = D.A_WARRIORS
